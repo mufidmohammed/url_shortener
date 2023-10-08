@@ -8,7 +8,7 @@ This is a documentation on how to install and run the URL shortening service imp
 
 To run the application, you will need the following software:
 
-- PHP 7.0 or later
+- PHP 8.0 or later
 - MySQL server 5.7 or later
 - A web server such as Apache or Nginx
 - A modern web browser
