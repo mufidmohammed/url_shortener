@@ -8,6 +8,7 @@ if (isset($_POST['decode']) )
     $url_controller = new UrlController();
     $conn = $db->conn;
     $decoded_url = $url_controller->decode($_POST['short_url'], $conn);
+    $url_object = json_decode($decoded_url);
 }
 
 ?>
@@ -30,7 +31,7 @@ if (isset($_POST['decode']) )
         </div>
     </form>
 
-    <p>Long url: <?= $decoded_url ?? 'Url not found' ?></p>
+    <p>Long url: <?= $url_object->long_url ?? '' ?></p>
     
 </body>
 </html>

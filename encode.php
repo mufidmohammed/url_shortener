@@ -2,15 +2,12 @@
 
 require_once('app.php');
 
-
 if (isset($_POST['encode']) )
 {
     $url_controller = new UrlController();
     $conn = $db->conn;
-    $long_url = $_POST['long_url'];
-
     $encoded_url = $url_controller->encode($_POST['long_url'], $conn);
-
+    $url_object = json_decode($encoded_url);
 }
 
 ?>
@@ -33,7 +30,7 @@ if (isset($_POST['encode']) )
         </div>
     </form>
 
-    <p>Encoded url: <?= $encoded_url ?? 'Invalid url' ?></p>
+    <p>Encoded url: <?= $url_object->short_url ?? '' ?></p>
     
 </body>
 </html>

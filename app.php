@@ -1,7 +1,5 @@
 <?php
 
-use UrlController as GlobalUrlController;
-
 require_once('connection/database.php');
 
 class UrlController
@@ -26,7 +24,10 @@ class UrlController
     public function encode($long_url, $conn)
     {
         if (!$long_url) {
-            return [];
+            return json_encode([
+                'short_url' => '',
+                'long_url' => $long_url
+            ]);
         }
 
         $sql = "SELECT short_url FROM url_shortener WHERE long_url = :long_url";
@@ -48,7 +49,11 @@ class UrlController
             $stmt->execute();
         }
 
-        return $short_url;
+
+        return json_encode([
+            'short_url' => $short_url,
+            'long_url' => $long_url
+        ]);
     }
 
     public function decode($short_url, $conn)
@@ -58,10 +63,16 @@ class UrlController
         $stmt->bindParam(':short_url', $short_url);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($result)
-            return $result['long_url'];
+
+        if ($result) {
+            $long_url = $result['long_url'];
+        } else {
+            $long_url = '';
+        }
         
-        return '';
+        return json_encode([
+            'short_url' => $short_url,
+            'long_url' => $long_url
+        ]);
     }
 }
-
