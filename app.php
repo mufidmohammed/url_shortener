@@ -4,7 +4,13 @@ require_once('connection/database.php');
 
 class UrlController
 {
+    private $conn;
     private $prefix = 'https://shrt.est/';
+
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+    }
 
     private function generate_short_code()
     {
@@ -21,7 +27,7 @@ class UrlController
         return $short_code;
     }
 
-    public function encode($long_url, $conn)
+    public function encode($long_url)
     {
         if (!$long_url) 
         {
@@ -31,36 +37,32 @@ class UrlController
         }
 
         $sql = "SELECT short_url FROM url_shortener WHERE long_url = :long_url";
-        $stmt = $conn->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':long_url', $long_url);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result) {
-            $short_url = $result['short_url'];
             return json_encode([
                 'error' => 'URL already exist'
             ]);
         }
-        else {
-            $short_code = $this->generate_short_code();
-            $short_url = $this->prefix . $short_code;
-            $sql = "INSERT INTO url_shortener (long_url, short_url) VALUES (:long_url, :short_url)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':long_url', $long_url);
-            $stmt->bindParam(':short_url', $short_url);
-            $stmt->execute();
-        }
+        
+        $short_code = $this->generate_short_code();
+        $short_url = $this->prefix . $short_code;
+        $sql = "INSERT INTO url_shortener (long_url, short_url) VALUES (:long_url, :short_url)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':long_url', $long_url);
+        $stmt->bindParam(':short_url', $short_url);
+        $stmt->execute();
 
-        return json_encode([
-            'short_url' => $short_url
-        ]);
+        return json_encode(['short_url' => $short_url]);
     }
 
-    public function decode($short_url, $conn)
+    public function decode($short_url)
     {
         $sql = "SELECT long_url FROM url_shortener WHERE short_url = :short_url";
-        $stmt = $conn->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':short_url', $short_url);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

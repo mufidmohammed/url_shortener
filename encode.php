@@ -6,11 +6,9 @@ $url = '';
 
 if (isset($_POST['encode'])) 
 {
-    $url_controller = new UrlController();
+    $url_controller = new UrlController($db->conn);
 
-    $conn = $db->conn;
-
-    $encoded_url = $url_controller->encode($_POST['long_url'], $conn);
+    $encoded_url = $url_controller->encode($_POST['long_url']);
 
     $url_object = json_decode($encoded_url);    
 

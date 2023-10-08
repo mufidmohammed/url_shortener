@@ -7,11 +7,9 @@ $url = '';
 
 if (isset($_POST['decode'])) 
 {
-    $url_controller = new UrlController();
+    $url_controller = new UrlController($db->conn);
 
-    $conn = $db->conn;
-
-    $decoded_url = $url_controller->decode($_POST['short_url'], $conn);
+    $decoded_url = $url_controller->decode($_POST['short_url']);
 
     $url_object = json_decode($decoded_url);
 
