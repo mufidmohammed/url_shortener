@@ -3,11 +3,19 @@
 require_once('app.php');
 
 
-if (isset($_POST['decode'])) {
+$url = '';
+
+if (isset($_POST['decode'])) 
+{
     $url_controller = new UrlController();
+
     $conn = $db->conn;
+
     $decoded_url = $url_controller->decode($_POST['short_url'], $conn);
+
     $url_object = json_decode($decoded_url);
+
+    $url = $url_object->error ?? $url_object->long_url;
 }
 
 ?>
@@ -22,19 +30,6 @@ if (isset($_POST['decode'])) {
 </head>
 
 <body>
-    <!-- <h1>Decode URL</h1>
-    <form action="" method="POST">
-        <div>
-            <label for="">Enter short URL</label>
-            <input type="text" name="short_url">
-        </div>
-        <div>
-            <input type="submit" name="decode">
-        </div>
-    </form>
-
-    <p>Long url: <?= $url_object->long_url ?? '' ?></p> -->
-
     <div class="px-4 py-5 my-5 text-center">
         <h1 class="display-5 fw-bold">Decode URL</h1>
         <div class="col-lg-6 mx-auto">
@@ -51,7 +46,7 @@ if (isset($_POST['decode'])) {
                 </div>
             </form>
 
-            <p>Decoded url: <?= $url_object->long_url ?? '' ?></p>
+            <p>Decoded url: <?= $url ?></p>
             
             <div class="mt-4 text-left">
                 <a href="./index.php">back</a>

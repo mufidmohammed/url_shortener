@@ -6,7 +6,7 @@ class UrlController
 {
     private $prefix = 'https://shrt.est/';
 
-    public function generate_short_code()
+    private function generate_short_code()
     {
         $length = 6;
         $short_code = '';
@@ -23,10 +23,10 @@ class UrlController
 
     public function encode($long_url, $conn)
     {
-        if (!$long_url) {
+        if (!$long_url) 
+        {
             return json_encode([
-                'short_url' => '',
-                'long_url' => $long_url
+                'error' => 'Empty URL'
             ]);
         }
 
@@ -38,6 +38,9 @@ class UrlController
 
         if ($result) {
             $short_url = $result['short_url'];
+            return json_encode([
+                'error' => 'URL already exist'
+            ]);
         }
         else {
             $short_code = $this->generate_short_code();
@@ -49,10 +52,8 @@ class UrlController
             $stmt->execute();
         }
 
-
         return json_encode([
-            'short_url' => $short_url,
-            'long_url' => $long_url
+            'short_url' => $short_url
         ]);
     }
 
@@ -65,14 +66,13 @@ class UrlController
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result) {
-            $long_url = $result['long_url'];
-        } else {
-            $long_url = '';
+            return json_encode([
+                'long_url' => $result['long_url']]
+            );
         }
-        
+
         return json_encode([
-            'short_url' => $short_url,
-            'long_url' => $long_url
+            'error' => 'Short url not found'
         ]);
     }
 }

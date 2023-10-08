@@ -2,11 +2,19 @@
 
 require_once('app.php');
 
-if (isset($_POST['encode'])) {
+$url = '';
+
+if (isset($_POST['encode'])) 
+{
     $url_controller = new UrlController();
+
     $conn = $db->conn;
+
     $encoded_url = $url_controller->encode($_POST['long_url'], $conn);
-    $url_object = json_decode($encoded_url);
+
+    $url_object = json_decode($encoded_url);    
+
+    $url = $url_object->error ?? $url_object->short_url;
 }
 
 ?>
@@ -21,17 +29,6 @@ if (isset($_POST['encode'])) {
 </head>
 
 <body>
-    <!-- <h1>Encode URL</h1>
-    <form action="" method="POST">
-        <div>
-            <label for="">Enter full URL</label>
-            <input type="text" name="long_url">
-        </div>
-        <div>
-            <input type="submit" name="encode">
-        </div>
-    </form> -->
-
     <div class="px-4 py-5 my-5 text-center">
         <h1 class="display-5 fw-bold">Encode URL</h1>
         <div class="col-lg-6 mx-auto">
@@ -48,7 +45,7 @@ if (isset($_POST['encode'])) {
                 </div>
             </form>
 
-            <p>Encoded url: <?= $url_object->short_url ?? '' ?></p>
+            <p>Encoded url: <?= $url ?></p>
 
             <div class="mt-4 text-left">
                 <a href="./index.php">back</a>
