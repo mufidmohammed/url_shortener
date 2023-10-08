@@ -6,6 +6,8 @@ require_once('connection/database.php');
 
 class UrlController
 {
+    private $prefix = 'https://shrt.est/';
+
     public function generate_short_code()
     {
         $length = 6;
@@ -23,33 +25,37 @@ class UrlController
 
     public function encode($long_url, $conn)
     {
-        $sql = "SELECT short_code FROM url_shortener WHERE long_url = :long_url";
+        if (!$long_url) {
+            return [];
+        }
+
+        $sql = "SELECT short_url FROM url_shortener WHERE long_url = :long_url";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':long_url', $long_url);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result) {
-            $short_code = $result['short_code'];
+            $short_url = $result['short_url'];
         }
         else {
             $short_code = $this->generate_short_code();
-            $sql = "INSERT INTO url_shortener (long_url, short_code) VALUES (:long_url, :short_code)";
+            $short_url = $this->prefix . $short_code;
+            $sql = "INSERT INTO url_shortener (long_url, short_url) VALUES (:long_url, :short_url)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':long_url', $long_url);
-            $stmt->bindParam(':short_code', $short_code);
+            $stmt->bindParam(':short_url', $short_url);
             $stmt->execute();
         }
 
-        $shorten_url = "https://www.somlfe.co/" . $short_code;
-        return $shorten_url;
+        return $short_url;
     }
 
-    public function decode($short_code, $conn)
+    public function decode($short_url, $conn)
     {
-        $sql = "SELECT long_url FROM url_shortener WHERE short_code = :short_code";
+        $sql = "SELECT long_url FROM url_shortener WHERE short_url = :short_url";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':short_code', $short_code);
+        $stmt->bindParam(':short_url', $short_url);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($result)
@@ -58,14 +64,4 @@ class UrlController
         return '';
     }
 }
-
-// $conn = $db->conn;
-
-// $url = new UrlController();
-
-// $long_url = "https://www.sommalife.com/ssahfeljoisegha.ciods";
-
-// $encoded_url = $url->encode($long_url, $conn);
-// $decoded_url = $url->decode('Dh49er', $conn);
-// var_dump($encoded_url, $decoded_url);
 

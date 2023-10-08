@@ -7,10 +7,7 @@ if (isset($_POST['decode']) )
 {
     $url_controller = new UrlController();
     $conn = $db->conn;
-    $short_url = explode('/', $_POST['short_url']);
-
-    $short_code = end($short_url);
-    $decoded_url = $url_controller->decode($short_code, $conn);
+    $decoded_url = $url_controller->decode($_POST['short_url'], $conn);
 }
 
 ?>
